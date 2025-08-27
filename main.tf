@@ -28,6 +28,42 @@ resource "aws_subnet" "subnet_b" {
   }
 }
 
+# -------------------------------------------
+# Internet Gateway y Tablas de Enrutamiento
+# -------------------------------------------
+# Añade un Internet Gateway para que la VPC pueda comunicarse con Internet
+resource "aws_internet_gateway" "mi_igw" {
+  vpc_id = aws_vpc.mi_vpc.id
+  tags = {
+    Name = "mi-igw-terraform"
+  }
+}
+
+# Define una tabla de enrutamiento para dirigir el tráfico de internet a través del IGW
+resource "aws_route_table" "mi_rtb" {
+  vpc_id = aws_vpc.mi_vpc.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.mi_igw.id
+  }
+  tags = {
+    Name = "mi-rtb-terraform"
+  }
+}
+
+# Asocia la Subred A con la tabla de enrutamiento
+resource "aws_route_table_association" "subnet_a_association" {
+  subnet_id      = aws_subnet.subnet_a.id
+  route_table_id = aws_route_table.mi_rtb.id
+}
+
+# Asocia la Subred B con la tabla de enrutamiento
+resource "aws_route_table_association" "subnet_b_association" {
+  subnet_id      = aws_subnet.subnet_b.id
+  route_table_id = aws_route_table.mi_rtb.id
+}
+
+
 # -----------------
 # Grupos de Seguridad
 # -----------------
@@ -54,7 +90,7 @@ resource "aws_security_group" "sg_instancias" {
 resource "aws_security_group" "sg_alb" {
   vpc_id      = aws_vpc.mi_vpc.id
   name        = "sg_alb"
-  description = "Permite tráfico HTTP desde internet"
+  description = "Permite trafico HTTP desde internet"
 
   ingress {
     from_port   = 80
