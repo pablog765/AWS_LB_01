@@ -1,0 +1,7 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+# Archivos de credenciales o claves privadas
+*.tfvars
+.aws/
