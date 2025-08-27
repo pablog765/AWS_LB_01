@@ -34,7 +34,7 @@ resource "aws_subnet" "subnet_b" {
 resource "aws_security_group" "sg_instancias" {
   vpc_id      = aws_vpc.mi_vpc.id
   name        = "sg_instancias"
-  description = "Permite tráfico desde el ALB"
+  description = "Permite trafico desde el ALB"
 
   ingress {
     from_port   = 80
